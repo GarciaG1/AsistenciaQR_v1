@@ -1,0 +1,38 @@
+function doGet(e) {
+  // Obtenemos el correo de la cuenta ejecutando el registro
+  const correo = Session.getActiveUser().getEmail();
+  Logger.log(correo);
+
+  // Registramos la asistencia usando el correo y los parámetros que vienen en la URL
+  registrarAsistencia(correo, e.parameter.id, e.parameter.nombre);
+
+  // Damos retroalimentación sobre lo que sucedió:
+
+  var fecha = new Date();
+  var id = e.parameter.id;
+  var nombre = e.parameter.nombre;
+
+  var template = HtmlService.createTemplateFromFile('index'); 
+  template.fecha = fecha;
+  template.id = id;
+  template.nombre = nombre;
+
+  var output = template.evaluate();
+  return output;
+}
+
+function include(fileName){
+  return HtmlService.createHtmlOutputFromFile(fileName).getContent();
+}
+
+
+function registrarAsistencia(correo, id, nombre) {
+  // Debes cambiar este identificador por el de tu documento de hoja de cálculo
+  const sheet = SpreadsheetApp.openById("1Yl7ZgKIobNyhwxyaE5PpFaV43fzg4nKq1l0YLDDEPwQ");
+  const asistencia = sheet.getSheetByName("ASISTENCIA");
+  const lastRow = asistencia.getLastRow() + 1;
+  asistencia.getRange(lastRow, 1).setValue(correo);
+  asistencia.getRange(lastRow, 2).setValue(id);
+  asistencia.getRange(lastRow, 3).setValue(nombre);
+  asistencia.getRange(lastRow, 4).setValue(new Date());
+}
